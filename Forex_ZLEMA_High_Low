@@ -69,8 +69,18 @@ optimize_zlema <- function(period, high, low, closed) {
   return(result)
 }
 
-training_result <- optimize_zlema(period = 400, high = eurusd$high, low = eurusd$low, closed = eurusd$closed)
+library(ggplot2)
+eurusd <- read.csv("eurusd_dd1.csv", header = FALSE)
+colnames(eurusd) <- c("high", "low", "closed")
+n <- as.numeric(dim(eurusd)[1])
+n_real <- floor(n * 0.7)
+test_eurusd <- eurusd[-(1:n_real), ]
+rownames(test_eurusd) <- NULL
+eurusd <- eurusd[1:n_real, ]
+rownames(eurusd) <- NULL
+rm(n, n_real)
 
+training_result <- optimize_zlema(period = 400, high = eurusd$high, low = eurusd$low, closed = eurusd$closed)
 test_result <- optimize_zlema(period = 400, high = test_eurusd$high, low = test_eurusd$low, closed = test_eurusd$closed)
 
 qplot(x = 1:400, y =  training_result$total_system_profit, geom = "area", fill = "Training Data", ylab = "Total System Profit") +
