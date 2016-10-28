@@ -1,0 +1,19 @@
+
+handle.na <- function(df){
+  
+  df <- as.data.frame(df)
+  
+  for (i in 1:ncol(df)) {
+    
+    if (is.numeric(df[, i])) {
+      
+      df[, i][is.na(df[, i])] <- median(df[, i], na.rm = TRUE)
+    } else {
+      
+      df[, i] <- as.character(df[, i])
+      df[, i][is.na(df[, i])] <- 'miss'
+      df[, i] <- as.factor(df[, i])
+    }
+  }
+  return(df)
+}
