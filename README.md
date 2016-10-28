@@ -1,5 +1,5 @@
 
-Welcome to my projects and codes. I will try to update my this intro page with some of interesting project results
+Welcome to my projects and codes. I will try to update this intro page with some of interesting project results
 
 
 
