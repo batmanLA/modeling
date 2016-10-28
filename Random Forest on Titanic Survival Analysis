@@ -1,0 +1,52 @@
+library(ggplot2)
+library(caret)
+library(dplyr)
+
+
+handle.na <- function(df){
+  
+  df <- as.data.frame(df)
+  
+  for (i in 1:ncol(df)) {
+    
+    if (is.numeric(df[, i])) {
+      
+      df[, i][is.na(df[, i])] <- median(df[, i], na.rm = TRUE)
+    } else {
+      
+      df[, i] <- as.character(df[, i])
+      df[, i][is.na(df[, i])] <- 'miss'
+      df[, i] <- as.factor(df[, i])
+    }
+  }
+  return(df)
+}
+
+train.data <- read.csv('traintitanic.csv')
+head(train.data)
+colSums(is.na(train.data))
+sapply(train.data, class)
+train.data <- handle.na(train.data)
+train.data$Survived <- as.factor(train.data$Survived)
+levels(train.data$Survived) <- c('Dead', 'Survived')
+train.data$Pclass <- as.factor(train.data$Pclass)
+
+table(train.data$Cabin)  ### cabin isn't a good predictor because 687 of them are missing (blank space)
+
+train.data <- train.data %>% select(-Ticket, -PassengerId, -Name, -Cabin)
+
+control <- trainControl(method = 'cv', number = 10)
+mygrid <- expand.grid(mtry = c(2,3,4,5,6,7))
+
+best <- train(Survived ~ ., method = 'rf', trControl = control, tuneGrid = mygrid, data = train.data, ntree = 1000)
+best
+plot(varImp(best))
+
+
+ggplot(data = train.data, aes(x = Sex)) + geom_bar(aes(fill = Survived), position = 'fill') + ggtitle('Females are Likely to Survive') 
+ggplot(data = train.data, aes(x = Fare)) + geom_density(colour = 'red', fill = 'yellow') + facet_grid(. ~ Survived) + ggtitle('Cheaper Ticket Price, More Likely to Be Dead')
+ggplot(data = train.data, aes(x = Age)) + geom_density(colour = 'red', fill = 'green') + facet_grid(. ~ Survived) + ggtitle('Younger the Age, Slightly Likely to Survive')
+
+# The most important three predictors were 'Sex', 'Fare (Ticket Price),' and 'Age.'
+# The more expensive ticket a passenger bought, the more likely they were to survive, which was more significant than 'Age.'
+# Interesting, money was still powerful 100 years ago !!!!!!!! 
