@@ -10,7 +10,7 @@ Welcome to my projects and codes. I will try to update this intro page with some
 
                                                   Pricing a House
                                                        
-                                     (Ames, Iowa: Alternative to the Boston Housing Data
+                                     (Data Source: Alternative to the Boston Housing Data
                                      Journal of Statistics Education, Volume 19, Number 3(2011))
                                          
 Top 10 Predictors To Price a House:
