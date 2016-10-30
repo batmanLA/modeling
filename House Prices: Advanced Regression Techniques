@@ -1,0 +1,124 @@
+library(caret)
+library(xgboost)
+library(dplyr)
+library(car)
+library(Matrix)
+library(gridExtra)
+
+df <- read.csv('train.csv')
+head(df)
+sapply(df, class)
+colSums(is.na(df)) / nrow(df)
+df <- df %>% select(-Alley, -FireplaceQu, -PoolQC, -Fence, -MiscFeature, -Id)
+nzv <- nearZeroVar(df, saveMetrics = TRUE)
+nzv[nzv$nzv, ]
+nzv <- nearZeroVar(df)
+df <- df[ , -nzv]
+
+handle.na <- function(df){
+  for (i in 1:ncol(df)) {
+
+    if (is.numeric(df[ ,i])) {
+    
+      df[ ,i][is.na(df[ , i])] <- median(df[, i], na.rm = T)
+    
+    } else {
+    
+        df[, i] <- as.character(df[, i])
+        df[, i][is.na(df[, i])] <- 'missing'
+        df[, i] <- as.factor(df[, i])
+    }  
+  }
+  return(df)
+}
+
+df <- handle.na(df)
+sapply(df, levels)
+
+id <- sample(1460, 1000)
+train.ult <- df[id, ]
+test.ult <- df[-id, ]
+
+dum <- sapply(train.ult, is.numeric)
+train_num <- train.ult[, dum]
+train_cat <- train.ult[, !dum]
+x <- findLinearCombos(as.matrix(train_num))
+x
+vif(lm(data = train_num, SalePrice ~ .))
+bad <- vif(lm(data = train_num, SalePrice ~ .)) > 5
+colnames(train_num)[bad]
+train_num <- train_num[, !bad]
+rm(dum, nzv, bad, id, x, df)
+train.ult <- cbind(train_cat, train_num)
+
+control <- trainControl(method = 'cv', number = 5, allowParallel = T)
+grid2 <- expand.grid(mtry = c(6,8,10))
+bst <- train(SalePrice ~. , method = 'rf', data = train.ult, ntree = 600, trControl = control, importance = TRUE, tuneGrid = grid2)
+bst
+bst$bestTune
+
+ImpMeasure <- data.frame(varImp(bst)$importance)
+ImpMeasure$Vars <- rownames(ImpMeasure)
+ImpMeasure[order(ImpMeasure$Overall, decreasing = T),][1:10, ]
+
+(mean((predict(bst, train.ult) - train.ult$SalePrice)^2))^0.5
+(mean((predict(bst, test.ult) - test.ult$SalePrice)^2))^0.5
+mean(df$SalePrice)
+
+# Top 10 Predictors To Price a House
+
+# LotArea: Lot size in square feet
+# OverallQual: Overall material and finish quality
+# YearRemodAdd: Remodel date
+# MasVnrArea: Masonry veneer area in square feet
+# BsmtQual: Height of the basement
+# KitchenQual: Kitchen quality
+# TotRmsAbvGrd: Total rooms above grade (does not include bathrooms)
+# GarageType: Garage location
+# GarageYrBlt: Year garage was built
+# GarageFinish: Interior finish of the garage
+
+
+train_num <- train_num %>% select(LotArea, OverallQual, YearRemodAdd, MasVnrArea, TotRmsAbvGrd, GarageYrBlt, SalePrice)
+train_cat <- train_cat %>% select(BsmtQual, KitchenQual, GarageType, GarageFinish)
+train.ult <- cbind(train_num, train_cat)
+
+list1 <- lapply(1:6, function (i) ggplot(train_num, aes(train_num[, i], SalePrice)) + geom_point() + geom_smooth() + xlab(colnames(train_num)[i]))
+marrangeGrob(list1, nrow = 2, ncol = 2)
+
+list2 <- lapply(1:4, function (i) ggplot(train_cat, aes(train_cat[, i], train_num$SalePrice)) + geom_boxplot() + xlab(colnames(train_cat)[i]))
+marrangeGrob(list2, nrow = 2, ncol = 2)
+
+panel.hist <- function(x, ...)
+{
+  usr <- par("usr"); on.exit(par(usr))
+  par(usr = c(usr[1:2], 0, 1.5) )
+  h <- hist(x, plot = FALSE)
+  breaks <- h$breaks; nB <- length(breaks)
+  y <- h$counts; y <- y/max(y)
+  rect(breaks[-nB], 0, breaks[-1], y, col = "cyan", ...)
+}
+pairs(trans_num, diag.panel = panel.hist)
+
+alph <- powerTransform(as.matrix(train_num), family = 'yjPower')
+alph
+alph$lambda[7] <- 0
+alph$lambda
+
+trans_num <- yjPower(train_num, alph$lambda)
+colnames(trans_num) <- colnames(train_num)
+trans_num <- cbind(train_cat, trans_num)
+
+reg3 <- lm(data = trans_num, SalePrice ~ . -GarageType -GarageFinish -GarageYrBlt)
+summary(reg3)
+par(mfrow = c(2,2))
+plot(reg3, main = 'Housing: Yeo-Johnson Transformation')
+
+test_num <- test.ult %>% select(LotArea, OverallQual, YearRemodAdd, MasVnrArea, TotRmsAbvGrd, GarageYrBlt, SalePrice)
+test_cat <- test.ult %>% select(BsmtQual, KitchenQual, GarageType, GarageFinish)
+trans_test <- yjPower(test_num, alph$lambda)
+colnames(trans_test) <- colnames(train_num)
+trans_test <- cbind(test_cat, trans_test)
+trans_y <- predict.lm(reg3, newdata = trans_test)
+
+(mean((exp(1)^trans_y - test.ult$SalePrice)^2))^0.5
