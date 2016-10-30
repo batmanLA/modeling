@@ -50,3 +50,4 @@ ggplot(data = train.data, aes(x = Age)) + geom_density(colour = 'red', fill = 'g
 # The most important three predictors were 'Sex', 'Fare (Ticket Price),' and 'Age.'
 # The more expensive ticket a passenger bought, the more likely they were to survive, which was more significant than 'Age.'
 # Interesting, money was still powerful 100 years ago !!!!!!!! 
+
