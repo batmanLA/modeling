@@ -88,3 +88,4 @@ qplot(x = 1:400, y =  training_result$total_system_profit, geom = "area", fill =
   
 ### when parameter 'period' is 90, the system performs best without overfitting.
 ### 'Best model' means the system is most profitable on both training and testing data sets.
+
