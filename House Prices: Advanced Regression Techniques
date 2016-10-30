@@ -122,3 +122,4 @@ trans_test <- cbind(test_cat, trans_test)
 trans_y <- predict.lm(reg3, newdata = trans_test)
 
 (mean((exp(1)^trans_y - test.ult$SalePrice)^2))^0.5
+
