@@ -1,0 +1,42 @@
+library(caret)
+library(kernlab)
+library(dplyr)
+library(ggplot2)
+
+train.ult <- read.csv('kaggle_monster_train.csv')
+head(train.ult)
+train.ult <- train.ult %>% select(-id)
+
+ggplot(data = train.ult, aes(x = type, y = bone_length, col = type)) + geom_boxplot(lwd = 2)
+ggplot(data = train.ult, aes(x = type, y = rotting_flesh, col = type)) + geom_boxplot()
+ggplot(data = train.ult, aes(x = type, y = hair_length, col = type)) + geom_boxplot()
+ggplot(data = train.ult, aes(x = type, y = has_soul, col = type)) + geom_boxplot()
+
+with(train.ult, prop.table(table(type, color), 2)) ## Color isn't a good predictor
+
+control1 <- trainControl(method = 'cv', number = 5, allowParallel = T, classProbs = TRUE)
+grid1 <- expand.grid(C = c(0.5,1,2,3,5,10,15))
+bst <- train(type ~ ., data = train.ult, method = 'svmLinear', preProcess = c('center', 'scale'), metric = 'ROC', trControl = control1, tuneGrid = grid1)
+bst
+bst$results[which.max(bst$results$Accuracy), ]
+table(train.ult$type, predict(bst))
+
+# Remember that scaling is crucial in SVM. Note how I used 'preProcess.'
+
+
+# Adiitional methods in SVM:
+
+grid0 <- expand.grid(C = c(1,2,3,5,10,15))
+bst <- train(type ~ ., data = train.ult, method = 'svmRadialCost', preProcess = c('center', 'scale'), metric = 'ROC', trControl = control1, tuneGrid = grid0)
+bst
+
+
+grid2 <- expand.grid(C = c(1, 3, 5, 10), degree = c(2,3,4,5), scale = c(0.1, 0.2, 0.3, 0.5))
+bst <- train(type ~ ., data = train.ult, method = 'svmPoly', preProcess = c('center', 'scale'), metric = 'ROC', trControl = control1, tuneGrid = grid2)
+bst
+
+
+grid3 <- expand.grid(C = c(1, 3, 5, 10), sigma = c(0, 0.01, 0.05, 0.1, 0.3, 0.5, 1, 5))
+bst <- train(type ~ ., data = train.ult, method = 'svmRadial', preProcess = c('center', 'scale'), metric = 'ROC', trControl = control1, tuneGrid = grid3)
+bst
+bst$results[which.max(bst$results$Accuracy),]
