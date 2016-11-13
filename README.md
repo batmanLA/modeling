@@ -19,6 +19,10 @@ San Francisco Crime Classification (check out the complete results from my code)
 
 ![](https://github.com/batmanLA/modelling/blob/master/san2.jpeg)
 
+
+
+Titanic Survival Analysis:
+
 ![](https://github.com/batmanLA/modelling/blob/master/tita.jpeg)
 
 
