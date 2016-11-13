@@ -34,7 +34,7 @@ Titanic Survival Analysis:
                                          
 Top 10 Predictors To Price a House:
 
-  ![](https://github.com/batmanLA/modelling/blob/master/housing.jpeg)
+  ![](https://github.com/batmanLA/modelling/blob/master/housevar.jpeg)
   
   OverallQual: Overall material and finish quality
   
