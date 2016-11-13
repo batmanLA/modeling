@@ -1,6 +1,6 @@
 
-                                                    Welcome to my projects and codes
-                                  I will  update this intro page with some of interesting project results
+                                                   Welcome to my projects and codes
+                                  I will update this intro page with some of interesting project results
 
 
 
