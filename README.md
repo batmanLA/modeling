@@ -1,5 +1,7 @@
 
-Welcome to my projects and codes. I will try to update this intro page with some of interesting project results
+                                                    Welcome to my projects and codes
+                                  I will  update this intro page with some of interesting project results
+
 
 
 San Francisco Crime Classification (check out the complete results from my code):
