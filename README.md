@@ -8,7 +8,7 @@ San Francisco Crime Classification (check out the complete results from my code)
 
   - Particular crimes are more likely to happen in certain areas (so location is a good predictor)
 
-![](https://github.com/batmanLA/modelling/blob/master/11.jpeg)
+![](https://github.com/batmanLA/modelling/blob/master/13.jpeg)
 
 ![](https://github.com/batmanLA/modelling/blob/master/12.jpeg)
 
