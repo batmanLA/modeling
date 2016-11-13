@@ -34,26 +34,26 @@ Titanic Survival Analysis:
                                          
 Top 10 Predictors To Price a House:
 
-  LotArea: Lot size in square feet
+  ![](https://github.com/batmanLA/modelling/blob/master/housing.jpeg)
   
   OverallQual: Overall material and finish quality
   
   YearRemodAdd: Remodel date
   
+  FullBath: Full bathrooms above grade
+  
+  Fireplaces: Number of fireplaces
+  
+  LotArea: Lot size in square feet
+  
   MasVnrArea: Masonry veneer area in square feet
   
-  BsmtQual: Height of the basement
+  OpenPorchSF: Open porch area in square feet
   
-  KitchenQual: Kitchen quality
+  HeatingQC: Heating quality and condition
   
-  TotRmsAbvGrd: Total rooms above grade (does not include bathrooms)
+  OverallCond: Overall condition rating
   
-  GarageType: Garage location
-  
-  GarageYrBlt: Year garage was built
-  
-  GarageFinish: Interior finish of the garage
+  Bedroom: Number of bedrooms above basement level
   
 For more info, check my codes on House Prices: Advanced Regression Techniques
-
-![](https://github.com/batmanLA/modelling/blob/master/housing.jpeg)
