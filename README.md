@@ -21,9 +21,10 @@ San Francisco Crime Classification (check out the complete results from my code)
 
 
 
-Titanic Survival Analysis:
+                                               Titanic Survival Analysis:
 
 ![](https://github.com/batmanLA/modelling/blob/master/pictures/tita.jpeg)
+For more info, please check out my code on Titanic Survivan Analysis
 
 
 
@@ -57,3 +58,12 @@ Top 10 Predictors To Price a House:
   Bedroom: Number of bedrooms above basement level
   
 For more info, check my codes on House Prices: Advanced Regression Techniques
+
+
+
+                                             Choosing Optimal Parameters on
+                                            the Trading System ZLEMA-Hih-Low
+                                            
+![](https://github.com/batmanLA/modelling/blob/master/Trading-on-Forex-Market/optimal_period.jpeg)
+
+For the complete project, check the folder 'Trading on Forex Market'
