@@ -28,7 +28,8 @@ San Francisco Crime Classification (check out the complete results from my code)
   
 For more info, please check out my code on Titanic Survivan Analysis
 
-
+  
+  
 
                                                   Pricing a House
                                                        
@@ -39,32 +40,32 @@ Top 10 Predictors To Price a House:
 
   ![](https://github.com/batmanLA/modelling/blob/master/pictures/housevar.jpeg)
   
-  OverallQual: Overall material and finish quality
+    OverallQual: Overall material and finish quality
   
-  YearRemodAdd: Remodel date
+    YearRemodAdd: Remodel date
   
-  FullBath: Full bathrooms above grade
+    FullBath: Full bathrooms above grade
   
-  Fireplaces: Number of fireplaces
+    Fireplaces: Number of fireplaces
   
-  LotArea: Lot size in square feet
+    LotArea: Lot size in square feet
   
-  MasVnrArea: Masonry veneer area in square feet
+    MasVnrArea: Masonry veneer area in square feet
   
-  OpenPorchSF: Open porch area in square feet
+    OpenPorchSF: Open porch area in square feet
   
-  HeatingQC: Heating quality and condition
+    HeatingQC: Heating quality and condition
   
-  OverallCond: Overall condition rating
+    OverallCond: Overall condition rating
   
-  Bedroom: Number of bedrooms above basement level
+    Bedroom: Number of bedrooms above basement level
   
 For more info, check my codes on House Prices: Advanced Regression Techniques
 
 
 
                                              Choosing Optimal Parameters on
-                                            the Trading System ZLEMA-Hih-Low
+                                            the Trading System ZLEMA-High-Low
                                             
 ![](https://github.com/batmanLA/modelling/blob/master/Trading-on-Forex-Market/optimal_period.jpg)
 
