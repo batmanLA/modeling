@@ -24,6 +24,8 @@ San Francisco Crime Classification (check out the complete results from my code)
                                                Titanic Survival Analysis:
 
 ![](https://github.com/batmanLA/modelling/blob/master/pictures/tita.jpeg)
+  
+  
 For more info, please check out my code on Titanic Survivan Analysis
 
 
@@ -64,6 +66,6 @@ For more info, check my codes on House Prices: Advanced Regression Techniques
                                              Choosing Optimal Parameters on
                                             the Trading System ZLEMA-Hih-Low
                                             
-![](https://github.com/batmanLA/modelling/blob/master/Trading-on-Forex-Market/optimal_period.jpeg)
+![](https://github.com/batmanLA/modelling/blob/master/Trading-on-Forex-Market/optimal_period.jpg)
 
 For the complete project, check the folder 'Trading on Forex Market'
