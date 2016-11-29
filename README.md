@@ -70,3 +70,8 @@ For more info, check my codes on House Prices: Advanced Regression Techniques
 ![](https://github.com/batmanLA/modelling/blob/master/Trading-on-Forex-Market/optimal_period.jpg)
 
 For the complete project, check the folder 'Trading on Forex Market'
+
+
+                                The Analysis on The Constitution of United States
+
+![](https://github.com/batmanLA/modelling/blob/master/Trading-on-Forex-Market/con.jpg)
