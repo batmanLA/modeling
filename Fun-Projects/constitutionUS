@@ -1,0 +1,28 @@
+
+setwd('/Users/batsukhbaatar/Desktop/datasets')
+library(stringr)
+library(ggplot2)
+
+con <- readLines('TheConstitution.txt')
+head(con)
+
+con <- str_c(con, sep = ' ', collapse = ' ')
+con <- str_trim(con, side = 'both')
+con <- unlist(str_split(con, pattern = ' '))
+con <- str_replace_all(con, pattern = '\\.', replacement = '')
+con <- str_replace_all(con, pattern = ',', replacement = '')
+con <- str_replace_all(con, pattern = '\\(', replacement = '')
+con <- str_replace_all(con, pattern = '\\)', replacement = '')
+con <- str_replace_all(con, pattern = '"', replacement = '')
+
+top <- table(con)[order(table(con), decreasing = T)][1:11]
+
+x <- names(top)
+x <- x[-7]
+top <- as.numeric(top)
+top <- top[-7]
+x <- factor(x, levels = x[order(top, decreasing = T)])
+ggplot(data.frame(), aes(x = x, y = top)) + geom_bar(stat = 'identity', fill = 'magenta1') + xlab(NULL) + ylab('Frequency') + ggtitle("'States' and 'President' are the most\nfrequent nouns in The Constitution") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+### 'States' and 'President' are the most frequent two nouns in The Constitution of United States.
