@@ -4,7 +4,7 @@
 
 
 
-San Francisco Crime Classification (check out the complete results from my code):
+San Francisco Crime Classification (check out 'Kaggle-Projects' for full code):
 
   - Particular crimes are more likely to happen in certain areas (so location is a good predictor)
 
@@ -26,7 +26,7 @@ San Francisco Crime Classification (check out the complete results from my code)
 ![](https://github.com/batmanLA/modelling/blob/master/pictures/tita.jpeg)
   
   
-For more info, please check out my code on Titanic Survivan Analysis
+For more info, please check out Titanic Survival Analysis in 'Kaggle-Projects'
 
   
   
@@ -60,7 +60,7 @@ Top 10 Predictors To Price a House:
   
     Bedroom: Number of bedrooms above basement level
   
-For more info, check my codes on House Prices: Advanced Regression Techniques
+For more info, check House Prices: Advanced Regression Techniques in 'Kaggle-Projects'
 
 
 
