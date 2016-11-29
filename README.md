@@ -74,4 +74,4 @@ For the complete project, check the folder 'Trading on Forex Market'
 
                                 The Analysis on The Constitution of United States
 
-![](https://github.com/batmanLA/modelling/blob/master/Trading-on-Forex-Market/con.jpg)
+![](https://github.com/batmanLA/modelling/blob/master/Trading-on-Forex-Market/con.jpeg)
