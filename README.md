@@ -72,7 +72,7 @@ For more info, check my codes on House Prices: Advanced Regression Techniques
 For the complete project, check the folder 'Trading on Forex Market'
 
 
-                                The Analysis on The Constitution of United States
+                                  Analysis on The Constitution of The United States
 
 ![](https://github.com/batmanLA/modelling/blob/master/pictures/con.jpeg)
 
