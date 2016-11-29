@@ -74,6 +74,8 @@ For the complete project, check the folder 'Trading on Forex Market'
 
                                   Analysis on The Constitution of The United States
 
+![](https://github.com/batmanLA/modelling/blob/master/pictures/con1.jpeg)
 ![](https://github.com/batmanLA/modelling/blob/master/pictures/con.jpeg)
+![](https://github.com/batmanLA/modelling/blob/master/pictures/con2.jpeg)
 
 For the full code, please check the folder 'Fun-Projects'
