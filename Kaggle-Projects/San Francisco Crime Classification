@@ -1,0 +1,59 @@
+library(ggplot2)
+library(caret)
+library(gridExtra)
+library(dplyr)
+library(ggmap)
+library(rpart)
+library(rpart.plot)
+
+setwd('/Users/batsukhbaatar/Desktop/datasets') # x long y lat
+df <- read.csv('san_train.csv', header = T)
+head(df)
+df$Dates <- as.Date(as.character(df$Dates), format = '%Y-%m-%d %H:%M:%S')
+df$Address <- NULL
+df$Descript <- NULL
+df <- df %>% group_by(X,Y) %>% mutate(count = n())
+df$mon <- as.factor(months(df$Dates))
+colSums(is.na(df))
+sapply(df, levels)
+
+id <- sample(1:dim(df)[1], 5000, replace = F)
+
+train.ult <- df[id, ]
+test.ult <- df[-id, ]
+
+san <- get_map(location = 'San Francisco', source = 'google', maptype = 'roadmap', zoom = 13)
+
+list1 <- lapply(1:39, function (i) ggmap(san, extent = "panel", maprange = FALSE) + geom_density2d(data = df[df$Category == levels(df$Category)[i], ], aes(x = X, y = Y)) +
+                  stat_density2d(data = df[df$Category == levels(df$Category)[i], ], aes(x = X, y = Y,  fill = ..level.., alpha = ..level..), size = 0.01, bins = 16, geom = 'polygon') +
+                  scale_fill_gradient(low = "green", high = "red") + scale_alpha(guide = 'none') + ggtitle(levels(df$Category)[i]))
+marrangeGrob(list1, nrow = 3, ncol = 3)
+
+ggplot(df, aes(x = mon, fill = Category)) + geom_bar(position = 'fill') + xlab('Months') + ylab('Density') + ggtitle('San Francisco Crime \nClassification 2003-2015')
+ggplot(df, aes(x = DayOfWeek, fill = Category)) + geom_bar(position = 'fill') + xlab('Day of Week') + ylab('Density') + ggtitle('San Francisco Crime \nClassification 2003-2015')
+
+
+control1 <- trainControl(method = 'cv', number = 5, allowParallel = T)  
+grid1 <- expand.grid(mtry = c(3,4,5,6))
+dum <- train.ult[1:2, ]
+levels(dum$Category)
+dum$Category <- factor(c('BRIBERY', 'TREA'), levels = levels(dum$Category))
+dum
+train.ult <- rbind(dum, train.ult)
+bst <- train(form = Category ~. -Dates, method = 'rpart2', data = train.ult, tuneLength = 10, trControl = control1)
+bst
+plot(bst)
+
+bst <- rpart(Category ~ . , data = train.ult, cp = 0.005, xval = 5, maxdepth = 5)
+printcp(bst)
+plotcp(bst)
+pfit <- prune(bst, cp = bst$cptable[which.min(bst$cptable[,"xerror"]),"CP"])
+rpart.plot(pfit)
+prp(pfit)
+
+pred <- predict(pfit, newdata = test.ult, type = 'class')
+mean(pred == test.ult$Category)
+
+
+
+
