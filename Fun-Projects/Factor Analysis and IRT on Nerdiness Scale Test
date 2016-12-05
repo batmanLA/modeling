@@ -1,0 +1,95 @@
+library(polycor)
+library(ggplot2)
+library(corrplot)
+library(gridExtra)
+library(psych)
+
+setwd('/Users/batsukhbaatar/Desktop/NPAS-data')
+df <- read.csv('NPAS-data.csv')
+sapply(df, sd)
+dum <- df
+head(dum)
+df[df == 1 | df == 2 | df == 3] <- 0
+df[df != 0] <- 1
+head(df)
+
+options(digits = 1)
+
+polychoric.matrix <- hetcor(df)
+polychoric.matrix <- polychoric.matrix$correlations
+colnames(polychoric.matrix) <- colnames(df)
+rownames(polychoric.matrix) <- colnames(df)
+polychoric.matrix
+
+# Maximum Likelihood Factor Analysis
+# entering raw data and extracting 3 factors with varimax rotation 
+
+fit <- fa(r = polychoric.matrix, nfactors = 2, rotate = 'oblimin', fm = 'ml')
+fit
+a <- eigen(matrix.poly)
+a$values
+# plot factor 1 by factor 2 
+plot(fit)
+text(load,labels=names(mydata),cex=.7) # add variable names
+
+### Item Response Theory
+
+library(ltm)
+
+df[, 5][1:250] <- sample(c(0,1), size = 250, replace = T) 
+df <- df[, c(5,7,9,24,26)]
+head(df)
+
+rasch1 <- rasch(df)
+tpm1 <- tpm(df, type = 'latent.trait')
+
+summary(tpm1)
+plot(tpm1)
+abline(h = 0.5, lwd = 3)
+plot(tpm1, type = 'IIC')
+
+
+summary(rasch1)
+plot(rasch1)
+abline(h = 0.5)
+plot(rasch1, type = 'IIC')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+l1 <- lapply(1:26, function(x) {ggplot(data = df, aes(x = factor(1), fill = factor(df[,x]))) + geom_bar() + xlab(colnames(df)[x]) + ggtitle('Distribution of Answers') + ylab('Percentage') +
+    scale_fill_discrete(breaks=c(1,2,3,4,5), labels=c('Disagree', 'Softly Disagree', 'Neutral', 'Softly Agree', 'Agree'), name = NULL) + coord_polar(theta = 'y')})
+marrangeGrob(l1, nrow = 3, ncol = 3)
+
+fun1 <- function(x) {
+        x = factor(x, levels = 1:5,labels = c('Disagree', 'Softly Disagree', 'Neurtal', 'Softly Agree', 'Agree'))
+        return(levels(x)[order(table(x), decreasing = T)[1]])
+}
+
+Modes <- sapply(df, fun1)
+Modes
+order(table(x), decreasing = T)
+levels(x)
+
+
+
