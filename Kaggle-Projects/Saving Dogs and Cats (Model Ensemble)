@@ -1,0 +1,48 @@
+setwd('/Users/batsukhbaatar/Desktop/datasets')
+train <- read.csv('finaltrain.csv')
+
+library(caret)
+library(dplyr)
+
+train$DOB <- as.numeric(train$DOB)
+train$Primary.Breed <- as.character(train$Primary.Breed)
+train$DOB[is.na(train$DOB)] <- median(train$DOB, na.rm = TRUE)
+train$Intake.Date <- as.numeric(train$Intake.Date)
+train$Outcome.Date <- as.numeric(train$Outcome.Date)
+train$Outcome.Date[is.na(train$Outcome.Date)] <- median(train$Outcome.Date, na.rm = TRUE)
+train$age <- train$Intake.Date - train$DOB
+train$stayin <- train$Outcome.Date - train$Intake.Date
+train$Primary.Breed[is.na(train$Primary.Breed)] <- 'missing'
+train$Primary.Breed <- as.factor(train$Primary.Breed)
+levels(train$OutCatg) <- c("ADOPTION", "EUTHANASIA", "OTHER", "OTHER", "OTHER", "OTHER", "OTHER")
+levels(train$OutCatg)
+colSums(is.na(train))
+
+train <- train %>% select(-NAME, -Color.Markings, -S.N.Date, -Microchip.Status, -Microchip.Date, -License.Date, -ARN)
+
+ind <- sample(1:113891, 60000, replace = FALSE)
+
+train1 <- train[ind, ]
+test1 <- train[-ind, ]
+
+control1 = trainControl(method = 'cv', number = 5)
+
+rf1 <- train(OutCatg ~., data = train1, trControl = control1, tunelength = 5, method = 'rf')
+rf1
+
+trboost1 <- train(OutCatg ~., data = train1, trControl = control1, tunelength = 30, method = 'xgbTree')
+trboost1
+
+svm1 <- train(OutCatg ~., data = train1, trControl = control1, tunelength = 30, method = 'svmPoly')
+svm1
+
+pred.prob <- (predict(rf1, newdata = test1, type = 'prob') + predict(trboost1, newdata = test1, type = 'prob') + predict(svm1, newdata = test1, type = 'prob')) / 3
+
+pred.class <- c()
+
+for (i in 1:nrow(test1)) {
+  
+  pred.class <- c(pred.class, colnames(OutCatg)[which.max(pred.prob[i, ])])
+} 
+
+mean(pred.class == test1$OutCatg) ### Model Ensemble accuracy improves significantly compared to a single tree boost
