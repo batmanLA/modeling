@@ -1,0 +1,156 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Feb 15 20:55:47 2017
+
+@author: batsukhbaatar
+"""
+
+import pandas as pd
+import numpy as np
+
+df = pd.read_csv('/Users/batsukhbaatar/Desktop/datasets/imdb_movie.csv', engine = 'python')
+df.head()
+ 
+dum = df.dtypes
+dum[0] == 'object'
+       
+num_index = [i for i in np.arange(df.shape[1]) if dum[i] in ['int64', 'float64']]
+
+df_num = df.iloc[:, num_index]
+name_num = df_num.columns
+df_cat = df.drop(df.columns[num_index], axis = 1)
+name_cat = df_cat.columns
+
+del df, dum, num_index
+
+df_num.head
+df_num.isnull().sum()
+
+from sklearn.preprocessing import Imputer
+from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import LabelEncoder
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.cross_validation import cross_val_score
+from sklearn.pipeline import Pipeline
+from sklearn.decomposition import PCA
+from sklearn.decomposition import KernelPCA
+from sklearn.svm import SVC
+from sklearn.cross_validation import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.grid_search import GridSearchCV
+from sklearn.ensemble import GradientBoostingClassifier
+
+le1 = LabelEncoder()
+imp1 = Imputer(missing_values = 'NaN', strategy = 'median', axis = 0) ## columnwise, across rows
+
+df_num = pd.DataFrame(imp1.fit_transform(df_num))
+df_num.columns = name_num
+y = df_num.loc[:,'imdb_score']
+df_num.drop('imdb_score', inplace = True, axis = 1)              ### y.value_counts().index[0]
+y_cat = ['must_watch' if i>=7 else 'No' for i in y]
+y_le = le1.fit_transform(y_cat)
+y_le[0:6]
+y_cat[0:6]
+
+X_train, X_test, y_train, y_test = train_test_split(df_num, y_le, test_size = 0.35)
+
+pipe1 = Pipeline([('sc1', StandardScaler()), ('pca', PCA()), ('svc', SVC())])           ### lsit of tuples
+pipe2 = Pipeline([('sc1', StandardScaler()), ('pca', PCA()), ('lr', LogisticRegression())])
+pipe3 = Pipeline([('sc1', StandardScaler()), ('kernelpca', KernelPCA()), ('svc', SVC())])
+pipe4 = Pipeline([('sc1', StandardScaler()), ('kernelpca', KernelPCA()), ('lr', LogisticRegression())])
+pipe5 = Pipeline([('sc1', StandardScaler()), ('knn', KNeighborsClassifier())])
+pipe6 = Pipeline([('sc1', StandardScaler()), ('boost', GradientBoostingClassifier())])
+
+
+param_range = [10**i for i in np.arange(-4,4)]
+gam = [5, 10, 15, 20]
+comp = [1, 2, 5, 10]
+depth = np.arange(3,20,5)
+
+rf = RandomForestClassifier(n_estimators = 600, n_jobs = -1)
+rf.fit(X_train, y_train)
+rf.feature_importances_
+np.mean(cross_val_score(estimator = rf, X = X_train, y = y_train, cv = 10, n_jobs = -1))
+np.mean(rf.predict(X_test) == y_test)
+
+importances = pd.DataFrame({'feature':X_train.columns,'importance':np.round(rf.feature_importances_,3)})
+importances = importances.sort_values('importance', ascending=False).set_index('feature')
+print(importances)
+importances.plot.bar()
+
+
+np.mean(cross_val_score(estimator = pipe1, X = X_train, y = y_train, cv = 10, n_jobs = -1))
+np.mean(cross_val_score(estimator = pipe2, X = X_train, y = y_train, cv = 10, n_jobs = -1))
+
+
+pipe1.fit(X_train, y_train)
+np.mean(pipe1.predict(X_test) == y_test)
+
+param_grid2 = [{'pca__n_components':comp, 'lr__C':param_range}]
+param_grid3 = [{'kernelpca__gamma':[15], 'kernelpca__kernel':['rbf', 'linear'], 'kernelpca__n_components':[1, 10], 'svc__C':[1], 'svc__kernel':['linear']}] ## list of dictionaries
+param_grid4 = [{'kernelpca__n_components':comp, 'kernelpca__kernel':['rbf', 'linear'], 'kernelpca__gamma':gam, 'lr__C':param_range}]
+param_grid5 = [{'knn__n_neighbors':np.arange(5, 100, 5)}]
+param_grid6 = [{'boost__max_depth':depth}]
+
+gs = GridSearchCV(estimator = pipe2, param_grid = param_grid2, scoring = 'accuracy', cv = 10, n_jobs = -1)
+gs.fit(X_train, y_train)
+lc = gs.best_estimator_
+gs.best_params_
+gs.best_score_
+
+gs = GridSearchCV(estimator = pipe3, param_grid = param_grid3, scoring = 'accuracy', cv = 5, n_jobs = -1)
+gs = GridSearchCV(estimator = pipe4, param_grid = param_grid4, scoring = 'accuracy', cv = 5, n_jobs = -1)
+
+gs = GridSearchCV(estimator = pipe5, param_grid = param_grid5, scoring = 'accuracy', cv = 5, n_jobs = -1)
+gs.fit(X_train, y_train)
+gs.best_score_
+gs.best_params_
+knn = gs.best_estimator_
+
+gs = GridSearchCV(estimator = pipe6, param_grid = param_grid6, scoring = 'accuracy', cv = 10, n_jobs = -1)
+gs.fit(X_train, y_train)
+gs.best_score_
+gs.best_params_
+boost = gs.best_estimator_
+
+np.mean(rf.predict(X_test) == y_test)
+np.mean(lc.predict(X_test) == y_test)
+np.mean(knn.predict(X_test) == y_test)
+
+
+proba = rf.predict_proba(X_test)*0.4 + boost.predict_proba(X_test)*0.4 + knn.predict_proba(X_test)*0.2
+
+np.mean(np.array([np.argmax(i) for i in proba]) == y_test)
+
+np.arange(5,25,3)
+
+
+##### Categorical
+df_cat.head()
+df_cat.isnull().sum()
+
+df_cat = df_cat.apply(lambda x:x.fillna(x.value_counts().index[0]))
+df_cat.head()
+
+df_cat.apply(lambda x: len(x.value_counts().index))
+
+df_cat.drop()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
