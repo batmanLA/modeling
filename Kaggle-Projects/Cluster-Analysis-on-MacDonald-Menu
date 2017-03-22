@@ -1,0 +1,47 @@
+library(dplyr)
+library(ggplot2)
+
+menu <- read.csv('/Users/batsukhbaatar/Downloads/menu.csv')
+menu <- menu %>% select(-Calories.from.Fat, -Total.Fat....Daily.Value., -Saturated.Fat....Daily.Value., -Cholesterol....Daily.Value., -Sodium....Daily.Value., -Carbohydrates....Daily.Value., -Dietary.Fiber....Daily.Value.)
+
+categorical <- menu[, c(1,2,3)]
+menu <- menu[, -c(1,2,3)]
+menu_sc <- scale(menu)
+head(menu_sc)
+
+ggplot(data = menu, aes(x = Cholesterol, y = Calories, col = Saturated.Fat)) + geom_point()
+ggplot(data = menu, aes(x = Total.Fat, y = Sodium, col = Protein)) + geom_point()
+
+prin1 <- prcomp(menu_sc, retx = TRUE)
+rotated_data12 <- prin1$x[, c(1,2)]
+
+ggplot(data = data.frame(rotated_data12), aes(x = PC1, y = PC2)) + geom_point() + ggtitle('First 2 Principal Components')
+
+prin1$rotation[, c(1,2)] ### Calories, Total Fat, Protein, Saturated Fat, Sodium for PC1         ### Carbohydrate, Sugars, Calcium for PC2
+
+kmeans2 <- kmeans(rotated_data12, 2) ### looks like k = 2 good choice, but we will investigate further
+kmeans3 <- kmeans(rotated_data12, 3)
+
+sse <- c()
+
+for (i in 1:10){
+  
+  dum <- kmeans(rotated_data12, i)
+  sse <- c(sse, dum$tot.withinss)
+ }
+ 
+plot(sse, main = 'SSE for different k\'s', type = 'b') 
+grid()
+ggplot(data = data.frame(rotated_data12), aes(x = PC1, y = PC2, col = kmeans2$cluster)) + geom_point() + ggtitle('First 2 Principal Components, 2 Clusters')
+ggplot(data = data.frame(rotated_data12), aes(x = PC1, y = PC2, col = kmeans3$cluster)) + geom_point() + ggtitle('First 2 Principal Components, 3 Clusters')
+
+head(as.character(categorical$Item[kmeans2$cluster == 1]))
+head(as.character(categorical$Item[kmeans2$cluster == 2]))
+
+prin1$rotation[, c(1,2)] ### Calories and Sugars have highest weights
+
+ggplot(data = menu, aes(x = Calories, y = Sugars, col = kmeans2$cluster)) + geom_point() + ggtitle('Colours represnet k = 2 Clustering')
+
+# When I investigated items (k = 3), the item classifications don't make sense.
+# However, k = 2 makes sense. When k = 2, one group presents meals with high protien or shakes (generally, high protein).
+# The other group presents, coffee, latte, smoothies, and sodas (generally, drinks with high sugar.)
