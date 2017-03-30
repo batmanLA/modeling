@@ -9,6 +9,8 @@ Created on Wed Feb 22 23:30:14 2017
 import pandas as pd
 import os
 import re
+import numpy as np
+import time
 
 df = pd.read_csv(r'/Users/batsukhbaatar/Desktop/Sample_Problem/Interview_Mapping.csv')
 df['Judgements'] = df['Judgements'] + '.txt'
@@ -52,6 +54,7 @@ def tokenizer_porter(text):
 X_train = df.loc[:, 'Judgements'].values
 y_train = df.loc[:, 'Class'].values
 X_test = df_test.loc[:, 'Judgements'].values
+y_test = df_test.loc[:, 'Class'].values
 
 
 from sklearn.grid_search import GridSearchCV
@@ -60,6 +63,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.feature_extraction.text import TfidfVectorizer
 tfidf = TfidfVectorizer(strip_accents = 'unicode', lowercase = True, preprocessor = None)
 
+t0 = time.time()
 
 param_grid = [{'vect__ngram_range': [(1,2)], 'vect__stop_words': ['english'], 'vect__tokenizer': [tokenizer_porter], 'clf__penalty': ['l1', 'l2'], 'clf__C': [1.0, 10.0, 100.0]}]
 
@@ -71,4 +75,7 @@ print('Best parameter set: %s ' % gs_lr_tfidf.best_params_)
 print('CV Accuracy: %.3f' % gs_lr_tfidf.best_score_)   ### 63% accuracy
 clf = gs_lr_tfidf.best_estimator_
 
-clf.predict(X_test)
+np.mean(clf.predict(X_test) == y_test) ### accuracy on the testing set
+
+print(time.time() - t0)
+
